@@ -16,6 +16,8 @@ void mainDebuggerLoop() {
             case 2:
                 continueExec();
                 break;
+            case 3:
+                exit(0);
             default:
                 printf("Unknown Command\n");
                 break;
@@ -26,10 +28,12 @@ void mainDebuggerLoop() {
 };
 
 int handleCommandInput(char *line) {
-    if(strcmp("info registers", line) != 0) {
+    if(!strcmp("info registers\n", line)) {
         return 1;
-    } else if (strcmp("continue", line) != 0) {
+    } else if (!strcmp("continue\n", line)) {
         return 2;
+    } else if (!strcmp("q\n", line)) {
+        return 3;
     }
 };
 

@@ -3,4 +3,4 @@ project(NoPressure C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(NoPressure main.c)
+add_executable(NoPressure src/main.c src/debugger.c src/debugger.h)
