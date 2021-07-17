@@ -7,18 +7,23 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <inttypes.h>
+
 
 extern __pid_t debuggePID;
 
 enum Command{
     PRINT_REGISTERS,
     CONTINUE,
-    QUIT
+    QUIT,
+    SINGLE_STEP
 };
 
 void mainDebuggerLoop();
 int handleCommandInput(char *line);
-void printRegisters();
-void continueExec();
+int printRegisters();
+int continueExec();
+int singleStep();
+int printDisassembly();
 
 #endif //NOPRESSURE_DEBUGGER_H

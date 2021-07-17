@@ -1,4 +1,6 @@
 #include "debugger.h"
+#include <capstone/capstone.h>
+
 
 char NoPressurex64_regs[27][10] = {
         "r15", "r14", "r13", "r12", "rbp",
@@ -20,7 +22,8 @@ void mainDebuggerLoop() {
         switch (commandResult) {
             case PRINT_REGISTERS: printRegisters(); break;
             case CONTINUE: continueExec(); break;
-            case QUIT: exit(0); break;
+            case QUIT: exit(0);
+            case SINGLE_STEP: singleStep(); break;
             default: printf("Unknown Command\n"); break;
         }
 
@@ -35,21 +38,39 @@ int handleCommandInput(char *line) {
         return CONTINUE;
     } else if (!strcmp("q\n", line)) {
         return QUIT;
+    } else if (!strcmp("s\n", line)) {
+        return SINGLE_STEP;
+    } else {
+        return -1;
     }
 };
 
-void printRegisters() {
+int printRegisters() {
     struct user_regs_struct regs;
     ptrace(PTRACE_GETREGS, debuggePID, NULL, &regs);
     unsigned long long *regPtr = &regs.rax;
     for (int i = 0; i < 27; ++i) {
-        printf("%s: 0x%x\n", NoPressurex64_regs[i], *regPtr++);
+        printf("%s: 0x%llx\n", NoPressurex64_regs[i], *regPtr++);
     }
+    return 0;
 };
 
-void continueExec() {
+int continueExec() {
     ptrace(PTRACE_CONT, debuggePID, NULL, NULL);
     int wait_status;
     int options = 0;
     waitpid(debuggePID,&wait_status, options);
+    return 0;
 };
+
+int singleStep() {
+    ptrace(PTRACE_SINGLESTEP, debuggePID, NULL, NULL);
+    int wait_status;
+    int options = 0;
+    waitpid(debuggePID,&wait_status, options);
+    printRegisters();
+    return 0;
+};
+
+int printDisassembly() {
+}
