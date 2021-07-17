@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <sys/ptrace.h>
 
 #include "debugger.h"
@@ -17,7 +18,12 @@ int main(int argc, char **argv) {
     printf("Loading %s for debugging\n", argv[1]);
 
     debuggePID = fork();
-    if(debuggePID == 0) {
+    if (debuggePID == -1) {
+        fprintf(stderr, "Error forking: %s\n", strerror(errno));
+        exit(-1);
+    }
+
+    if (debuggePID == 0) {
         // Exec child process
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
         execl(argv[1], argv[1], NULL);
