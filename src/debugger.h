@@ -8,7 +8,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-__pid_t debuggePID;
+extern __pid_t debuggePID;
+
+enum Command{
+    PRINT_REGISTERS,
+    CONTINUE,
+    QUIT
+};
 
 void mainDebuggerLoop();
 int handleCommandInput(char *line);
