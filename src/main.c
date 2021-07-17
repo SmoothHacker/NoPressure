@@ -16,21 +16,24 @@ int main(int argc, char **argv) {
     }
 
     printf("Loading %s for debugging\n", argv[1]);
+    debugSession debugHandle;
+    debugHandle.programName = argv[1];
+    debugHandle.isRunning = false;
 
-    debuggePID = fork();
-    if (debuggePID == -1) {
+    debugHandle.programPID = fork();
+    if (debugHandle.programPID == -1) {
         fprintf(stderr, "Error forking: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (debuggePID == 0) {
+    if (debugHandle.programPID == 0) {
         // Exec child process
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-        execl(argv[1], argv[1], NULL);
+        execl(debugHandle.programName, debugHandle.programName, NULL);
     } else {
         // Exec Debugger Logic
-        printf("Starting debugging process [pid %d]\n", debuggePID);
-        mainDebuggerLoop();
+        printf("Starting debugging process [pid %d]\n", debugHandle.programPID);
+        mainDebuggerLoop(&debugHandle);
     }
 
     return 0;

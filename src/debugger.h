@@ -8,9 +8,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 
-extern __pid_t debuggePID;
+typedef struct {
+    char *programName;
+    bool isRunning;
+    struct user_regs_struct* programRegs;
+    __pid_t programPID;
+} debugSession;
 
 enum Command{
     PRINT_REGISTERS,
@@ -19,11 +25,11 @@ enum Command{
     SINGLE_STEP
 };
 
-void mainDebuggerLoop();
+void mainDebuggerLoop(debugSession *debugHandle);
 int handleCommandInput(char *line);
-int printRegisters();
-int continueExec();
-int singleStep();
-int printDisassembly();
+int printRegisters(debugSession *debugHandle);
+int continueExec(debugSession *debugHandle);
+int singleStep(debugSession *debugHandle);
+int printDisassembly(debugSession *debugHandle);
 
 #endif //NOPRESSURE_DEBUGGER_H
