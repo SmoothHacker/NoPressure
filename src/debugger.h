@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <stdbool.h>
-
+#include <capstone/capstone.h>
 
 typedef struct {
     char *programName;

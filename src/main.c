@@ -6,13 +6,11 @@
 
 #include "debugger.h"
 
-__pid_t debuggePID;
-
-int main(int argc, char **argv) {
-    printf("NoPressure (2021) Debugger\n");
+int main(int argc, char **argv, char **envp) {
+    printf("NoPressure Linux Debugger\n");
     if (argc != 2 || strcmp(argv[1], "-h") == 0) {
-        printf("\tUsage: NoPressure BINARY");
-        return 1;
+        fprintf(stderr, "\tUsage: NoPressure BINARY");
+        exit(-1);
     }
 
     printf("Loading %s for debugging\n", argv[1]);
@@ -28,12 +26,17 @@ int main(int argc, char **argv) {
 
     if (debugHandle.programPID == 0) {
         // Exec child process
-        ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-        execl(debugHandle.programName, debugHandle.programName, NULL);
+        if (ptrace(PTRACE_TRACEME, 0, NULL, NULL)) {
+            fprintf(stderr, "Error forking: %s\n", strerror(errno));
+            exit(-1);
+        }
+        execl(debugHandle.programName, debugHandle.programName, envp);
     } else {
         // Exec Debugger Logic
         printf("Starting debugging process [pid %d]\n", debugHandle.programPID);
         mainDebuggerLoop(&debugHandle);
+        fprintf(stderr, "Detaching\n");
+        ptrace(PTRACE_DETACH, debugHandle.programPID, 0, 0);
     }
 
     return 0;
