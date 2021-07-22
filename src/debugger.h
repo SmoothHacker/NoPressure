@@ -17,7 +17,9 @@ typedef struct {
     bool isRunning;
     struct user_regs_struct* programRegs;
     __pid_t programPID;
-} debugSession;
+    uint64_t baseAddress;
+    FILE *elfFD;
+} dbgSession;
 
 enum Command{
     PRINT_REGISTERS,
