@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <stdbool.h>
+#include <elf.h>
 #include <capstone/capstone.h>
 
 typedef struct {
@@ -25,11 +26,12 @@ enum Command{
     SINGLE_STEP
 };
 
-void mainDebuggerLoop(debugSession *debugHandle);
+void mainDebuggerLoop(dbgSession *dbgHandle);
 int handleCommandInput(char *line);
-int printRegisters(debugSession *debugHandle);
-int continueExec(debugSession *debugHandle);
-int singleStep(debugSession *debugHandle);
-int printDisassembly(debugSession *debugHandle);
+int printRegisters(dbgSession *dbgHandle);
+int continueExec(dbgSession *dbgHandle);
+int singleStep(dbgSession *dbgHandle);
+int printDisassembly(dbgSession *dbgHandle);
+int debugSetup(dbgSession *dbgHandle);
 
 #endif //NOPRESSURE_DEBUGGER_H

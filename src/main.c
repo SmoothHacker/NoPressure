@@ -14,7 +14,7 @@ int main(int argc, char **argv, char **envp) {
     }
 
     printf("Loading %s for debugging\n", argv[1]);
-    debugSession debugHandle;
+    dbgSession debugHandle;
     debugHandle.programName = argv[1];
     debugHandle.isRunning = false;
 
