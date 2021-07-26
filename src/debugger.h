@@ -10,7 +10,8 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <elf.h>
-#include <capstone/capstone.h>
+
+#define DEBUG 0
 
 typedef struct {
     char *programName;
