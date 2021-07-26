@@ -14,29 +14,34 @@ int main(int argc, char **argv, char **envp) {
     }
 
     printf("Loading %s for debugging\n", argv[1]);
-    dbgSession debugHandle;
-    debugHandle.programName = argv[1];
-    debugHandle.isRunning = false;
+    dbgSession dbgHandle;
+    char *progName = strrchr(argv[1], '/');
+    dbgHandle.programName = ++progName;
+    dbgHandle.isRunning = false;
 
-    debugHandle.programPID = fork();
-    if (debugHandle.programPID == -1) {
+    printf("Loading %s for debugging\n", dbgHandle.programName);
+
+    dbgHandle.programPID = fork();
+    if (dbgHandle.programPID == -1) {
         fprintf(stderr, "Error forking: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (debugHandle.programPID == 0) {
+    if (dbgHandle.programPID == 0) {
         // Exec child process
-        if (ptrace(PTRACE_TRACEME, 0, NULL, NULL)) {
-            fprintf(stderr, "Error forking: %s\n", strerror(errno));
+        if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) < 0) {
+            fprintf(stderr, "Error in ptrace\n");
             exit(-1);
         }
-        execl(debugHandle.programName, debugHandle.programName, envp);
+        if(execl(argv[1], argv[1]) < 0) {
+            perror("Execve Failed");
+        }
     } else {
         // Exec Debugger Logic
-        printf("Starting debugging process [pid %d]\n", debugHandle.programPID);
-        mainDebuggerLoop(&debugHandle);
-        fprintf(stderr, "Detaching\n");
-        ptrace(PTRACE_DETACH, debugHandle.programPID, 0, 0);
+        int wait_status;
+        printf("Starting debugging process [pid %d]\n", dbgHandle.programPID);
+        waitpid(dbgHandle.programPID, &wait_status, __WALL);
+        mainDebuggerLoop(&dbgHandle);
     }
 
     return 0;
