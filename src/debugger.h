@@ -17,8 +17,10 @@ typedef struct {
     char *programName;
     bool isRunning;
     struct user_regs_struct* programRegs;
-    __pid_t programPID;
+    __pid_t PID;
     uint64_t baseAddress;
+    char *exePath;
+    Elf64_Ehdr *elfHeader;
     FILE *elfFD;
 } dbgSession;
 
